@@ -1,0 +1,18 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Python
+.env
+
+# YOLO
+runs/
+outputs/
+*.pt
+*.pth
+*.onnx
+
+# Datasets
+datasets/
+data/

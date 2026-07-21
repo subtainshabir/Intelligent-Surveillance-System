@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wrong Direction Detection · Surveillance Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+</head>
+<body>
+
+<div class="console">
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="dot dot--live"></span>
+      <span class="topbar-title">SURV/OS</span>
+      <span class="topbar-sub">Wrong-Direction Detection</span>
+    </div>
+    <div class="topbar-right" id="systemStatus">
+      <span class="status-label">STATUS</span>
+      <span class="status-value" id="statusValue">IDLE</span>
+    </div>
+  </header>
+
+  <!-- Main grid -->
+  <main class="grid">
+
+    <!-- Panel 01: Upload -->
+    <section class="panel" aria-labelledby="panel01-title">
+      <div class="panel-head">
+        <span class="panel-index">01</span>
+        <h2 id="panel01-title" class="panel-title">Source Feed</h2>
+      </div>
+
+      <div class="panel-body">
+        <label for="fileInput" class="dropzone" id="dropzone">
+          <input type="file" id="fileInput" accept=".mp4,.avi,.mov,.mkv,.webm" hidden>
+          <svg class="dropzone-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M12 16V4M12 4l-4 4M12 4l4 4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <p class="dropzone-text">Drop CCTV footage here or <span class="dropzone-link">browse</span></p>
+          <p class="dropzone-hint">MP4 · AVI · MOV · MKV — up to 200MB</p>
+        </label>
+
+        <div class="file-info" id="fileInfo" hidden>
+          <div class="file-info-row">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+            <span id="fileName">—</span>
+            <button type="button" id="clearFile" class="file-clear" aria-label="Remove file">✕</button>
+          </div>
+          <video id="sourcePreview" class="feed-video" controls muted></video>
+        </div>
+
+        <button type="button" id="predictBtn" class="btn btn--primary" disabled>
+          Run Detection
+        </button>
+      </div>
+    </section>
+
+    <!-- Panel 02: Output -->
+    <section class="panel" aria-labelledby="panel02-title">
+      <div class="panel-head">
+        <span class="panel-index">02</span>
+        <h2 id="panel02-title" class="panel-title">Processed Feed</h2>
+        <span class="rec-dot" id="recDot" hidden>● REC</span>
+      </div>
+
+      <div class="panel-body">
+        <div class="monitor" id="monitor">
+          <div class="monitor-empty" id="monitorEmpty">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="14" rx="1"/><path d="M8 21h8M12 18v3"/></svg>
+            <p>No output yet</p>
+            <p class="monitor-empty-hint">Upload a feed and run detection to view results.</p>
+          </div>
+
+          <div class="monitor-processing" id="monitorProcessing" hidden>
+            <div class="scan-line"></div>
+            <p id="processingText">Analyzing movement…</p>
+          </div>
+
+          <img id="outputStream" class="feed-video monitor-video" alt="Live processed feed" hidden>
+          <div class="monitor-scanlines"></div>
+          <div class="monitor-corner monitor-corner--tl"></div>
+          <div class="monitor-corner monitor-corner--tr"></div>
+          <div class="monitor-corner monitor-corner--bl"></div>
+          <div class="monitor-corner monitor-corner--br"></div>
+        </div>
+
+        <div class="legend">
+          <span class="legend-item"><span class="legend-swatch legend-swatch--ok"></span>Correct direction</span>
+          <span class="legend-item"><span class="legend-swatch legend-swatch--alert"></span>Wrong direction</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Alert log -->
+  <section class="panel panel--wide" aria-labelledby="panel03-title">
+    <div class="panel-head">
+      <span class="panel-index">03</span>
+      <h2 id="panel03-title" class="panel-title">Alert Log</h2>
+      <span class="alert-count" id="alertCount">0 events</span>
+    </div>
+    <div class="panel-body">
+      <ul class="alert-log" id="alertLog">
+        <li class="alert-log-empty" id="alertLogEmpty">No wrong-direction events detected yet.</li>
+      </ul>
+    </div>
+  </section>
+
+</div>
+
+<script src="{{ url_for('static', path='script.js') }}"></script>
+</body>
+</html>
