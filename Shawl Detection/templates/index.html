@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shawl Detection App</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>🧣 Shawl Detection App</h1>
+      <p class="subtitle">Upload an image or video to detect shawls using YOLOv8</p>
+    </header>
+
+    <main>
+      <section class="card upload-card">
+        <form id="upload-form">
+          <label for="file-input" class="file-label">
+            <span id="file-name">Choose an image or video…</span>
+          </label>
+          <input type="file" id="file-input" name="file" accept="image/*,video/*" required />
+
+          <button type="submit" id="submit-btn" class="btn">Detect Shawl</button>
+        </form>
+
+        <div id="loading" class="loading hidden">
+          <div class="spinner"></div>
+          <span>Processing, please wait…</span>
+        </div>
+
+        <p id="error-message" class="error hidden"></p>
+      </section>
+
+      <section class="card result-card">
+        <h2>Result</h2>
+        <div id="result-container" class="result-container">
+          <p id="placeholder-text" class="placeholder">Your detection result will appear here.</p>
+          <img id="result-image" class="result-media hidden" alt="Detection result" />
+          <img id="result-stream" class="result-media hidden" alt="Live video detection stream" />
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Powered by FastAPI &amp; Ultralytics YOLOv8</p>
+    </footer>
+  </div>
+
+  <script src="/static/js/script.js"></script>
+</body>
+</html>
