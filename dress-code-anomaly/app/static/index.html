@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sentry — Dress-Code Anomaly Watch</title>
+<style>
+  :root {
+    --bg: #0e1420;
+    --panel: #141b2a;
+    --panel-line: #263349;
+    --grid-line: rgba(88, 120, 160, 0.08);
+    --ink: #d7e0ee;
+    --ink-dim: #7b8aa3;
+    --ok: #2fb896;
+    --alert: #e2593a;
+    --amber: #d99a3d;
+    --mono: 'IBM Plex Mono', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans: 'IBM Plex Sans', -apple-system, 'Segoe UI', sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0 / 100% 28px,
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0 / 28px 100%,
+      var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+  }
+
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 36px 24px 64px;
+  }
+
+  header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--panel-line);
+    padding-bottom: 18px;
+    margin-bottom: 28px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .brand .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--ok);
+    box-shadow: 0 0 0 3px rgba(47,184,150,0.15);
+    display: inline-block;
+    position: relative;
+    top: -1px;
+  }
+  .dot.live { background: var(--alert); box-shadow: 0 0 0 3px rgba(226,89,58,0.18); animation: pulse 1.4s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+  h1 {
+    font-family: var(--mono);
+    font-size: 20px;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+    margin: 0;
+  }
+  h1 .thin { color: var(--ink-dim); font-weight: 400; }
+
+  .tagline {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-dim);
+    text-align: right;
+    line-height: 1.5;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 860px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--panel-line);
+    border-radius: 3px;
+  }
+
+  .panel-head {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--panel-line);
+  }
+
+  .panel-body { padding: 16px; }
+
+  .drop {
+    border: 1px dashed var(--panel-line);
+    border-radius: 3px;
+    padding: 26px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease;
+    display: block;
+  }
+  .drop:hover, .drop.drag { border-color: var(--amber); background: rgba(217,154,61,0.04); }
+  .drop input { display: none; }
+  .drop .icon { font-size: 22px; margin-bottom: 8px; opacity: 0.7; }
+  .drop .label { font-family: var(--mono); font-size: 12px; color: var(--ink-dim); }
+  .drop .filename { font-family: var(--mono); font-size: 12.5px; color: var(--ink); margin-top: 8px; word-break: break-all; }
+
+  .field { margin-top: 18px; }
+  .field label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 8px;
+  }
+  select {
+    width: 100%;
+    background: #0e1420;
+    color: var(--ink);
+    border: 1px solid var(--panel-line);
+    border-radius: 3px;
+    padding: 9px 10px;
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+  .hint { font-family: var(--mono); font-size: 11px; color: var(--ink-dim); margin-top: 8px; line-height: 1.5; }
+
+  button.run {
+    margin-top: 20px;
+    width: 100%;
+    background: var(--amber);
+    color: #1a1206;
+    border: none;
+    border-radius: 3px;
+    padding: 12px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter .15s ease, opacity .15s ease;
+  }
+  button.run:hover { filter: brightness(1.08); }
+  button.run:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .viewport-body {
+    padding: 0;
+    min-height: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: repeating-linear-gradient(135deg, #101724, #101724 10px, #0e1420 10px, #0e1420 20px);
+    position: relative;
+    overflow: hidden;
+  }
+  .viewport-body img {
+    max-width: 100%;
+    max-height: 620px;
+    display: block;
+  }
+  .placeholder {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--ink-dim);
+    text-align: center;
+    padding: 40px;
+  }
+  .placeholder .big { font-size: 30px; display: block; margin-bottom: 10px; opacity: 0.5; }
+
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--ink-dim);
+    padding: 10px 16px;
+    border-top: 1px solid var(--panel-line);
+  }
+  .status-bar .badge {
+    padding: 2px 8px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.05);
+    color: var(--ink);
+  }
+  .status-bar .badge.expected { color: var(--ok); border: 1px solid rgba(47,184,150,0.35); }
+
+  .log { max-height: 320px; overflow-y: auto; }
+  .log-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--panel-line);
+  }
+  .log-row:last-child { border-bottom: none; }
+  .swatch { width: 11px; height: 11px; border-radius: 2px; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.15); }
+  .log-row .tag {
+    margin-left: auto;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 2px;
+  }
+  .tag.anomaly { background: rgba(226,89,58,0.15); color: var(--alert); }
+  .tag.ok { background: rgba(47,184,150,0.12); color: var(--ok); }
+  .empty-log { padding: 20px 16px; font-family: var(--mono); font-size: 12px; color: var(--ink-dim); }
+
+  .row-two {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 20px;
+  }
+  @media (max-width: 860px) { .row-two { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <span class="dot" id="statusDot"></span>
+      <h1>SENTRY <span class="thin">/ dress-code watch</span></h1>
+    </div>
+    <div class="tagline">clothing-color anomaly detection<br/>YOLOv8 · ByteTrack · HSV</div>
+  </header>
+
+  <div class="grid">
+
+    <div class="panel">
+      <div class="panel-head">01 — Input</div>
+      <div class="panel-body">
+
+        <label class="drop" id="drop">
+          <input type="file" id="fileInput" accept="image/*,video/*" />
+          <div class="icon">⤒</div>
+          <div class="label">drop an image or video, or click to browse</div>
+          <div class="filename" id="filename"></div>
+        </label>
+
+        <div class="field">
+          <label for="expected">Expected color</label>
+          <select id="expected">
+            <option value="">Auto (majority vote)</option>
+            <option value="black">Black</option>
+            <option value="white">White</option>
+            <option value="gray">Gray</option>
+            <option value="red">Red</option>
+            <option value="orange">Orange</option>
+            <option value="yellow">Yellow</option>
+            <option value="green">Green</option>
+            <option value="cyan">Cyan</option>
+            <option value="blue">Blue</option>
+            <option value="purple">Purple</option>
+            <option value="pink">Pink</option>
+          </select>
+          <div class="hint">
+            Set the dress-code color if you know it (e.g. a funeral requiring black).
+            Leave on Auto to flag whoever deviates from the crowd's majority color instead.
+          </div>
+        </div>
+
+        <button class="run" id="runBtn" disabled>Run analysis</button>
+        <div class="hint" id="modeHint" style="margin-top:14px;"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">02 — Feed</div>
+      <div class="viewport-body" id="viewport">
+        <div class="placeholder"><span class="big">▢</span>waiting for input</div>
+      </div>
+      <div class="status-bar">
+        <span>STATUS: <span class="badge" id="statusBadge">idle</span></span>
+        <span id="frameCounter"></span>
+        <span id="expectedBadgeWrap" style="margin-left:auto;"></span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="row-two">
+    <div class="panel">
+      <div class="panel-head">03 — Anomaly alerts</div>
+      <div class="log" id="alertLog">
+        <div class="empty-log">no anomalies logged yet</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">04 — All detections (image mode)</div>
+      <div class="log" id="peopleLog">
+        <div class="empty-log">run an image to see the full per-person breakdown</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const SWATCH = {
+  black:'#1b1b1f', white:'#f4f4f4', gray:'#8a8f98', red:'#e2593a', orange:'#e08a3d',
+  yellow:'#e2c53a', green:'#3ac26a', cyan:'#3ac2c0', blue:'#3a7fe2', purple:'#8a5ae2', pink:'#e25aa9'
+};
+
+const fileInput = document.getElementById('fileInput');
+const drop = document.getElementById('drop');
+const filenameEl = document.getElementById('filename');
+const runBtn = document.getElementById('runBtn');
+const modeHint = document.getElementById('modeHint');
+const viewport = document.getElementById('viewport');
+const statusDot = document.getElementById('statusDot');
+const statusBadge = document.getElementById('statusBadge');
+const frameCounter = document.getElementById('frameCounter');
+const expectedBadgeWrap = document.getElementById('expectedBadgeWrap');
+const alertLog = document.getElementById('alertLog');
+const peopleLog = document.getElementById('peopleLog');
+
+let selectedFile = null;
+let pollTimer = null;
+
+fileInput.addEventListener('change', () => {
+  if (fileInput.files.length) selectFile(fileInput.files[0]);
+});
+['dragover','dragenter'].forEach(evt => drop.addEventListener(evt, e => { e.preventDefault(); drop.classList.add('drag'); }));
+['dragleave','drop'].forEach(evt => drop.addEventListener(evt, e => { e.preventDefault(); drop.classList.remove('drag'); }));
+drop.addEventListener('drop', e => {
+  if (e.dataTransfer.files.length) selectFile(e.dataTransfer.files[0]);
+});
+
+function selectFile(file) {
+  selectedFile = file;
+  filenameEl.textContent = file.name;
+  runBtn.disabled = false;
+  const isVideo = file.type.startsWith('video/');
+  modeHint.textContent = isVideo
+    ? 'Video detected — will process and stream live, frame by frame, as it runs.'
+    : 'Image detected — will return one annotated result immediately.';
+}
+
+function resetPanels() {
+  alertLog.innerHTML = '<div class="empty-log">no anomalies logged yet</div>';
+  peopleLog.innerHTML = '<div class="empty-log">run an image to see the full per-person breakdown</div>';
+  frameCounter.textContent = '';
+  expectedBadgeWrap.innerHTML = '';
+}
+
+function setStatus(text, live) {
+  statusBadge.textContent = text;
+  statusDot.classList.toggle('live', !!live);
+}
+
+function expectedBadge(color) {
+  if (!color) return '';
+  return '<span class="badge expected">expected: ' + color + '</span>';
+}
+
+runBtn.addEventListener('click', async () => {
+  if (!selectedFile) return;
+  if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+  resetPanels();
+  runBtn.disabled = true;
+
+  const expected = document.getElementById('expected').value;
+  const isVideo = selectedFile.type.startsWith('video/');
+
+  try {
+    if (isVideo) {
+      await runVideo(selectedFile, expected);
+    } else {
+      await runImage(selectedFile, expected);
+    }
+  } catch (err) {
+    setStatus('error', false);
+    viewport.innerHTML = '<div class="placeholder">error: ' + err.message + '</div>';
+  } finally {
+    runBtn.disabled = false;
+  }
+});
+
+async function runImage(file, expected) {
+  setStatus('analyzing…', true);
+  viewport.innerHTML = '<div class="placeholder"><span class="big">◐</span>running detection…</div>';
+
+  const form = new FormData();
+  form.append('file', file);
+  if (expected) form.append('expected_color', expected);
+
+  const res = await fetch('/analyze/image', { method: 'POST', body: form });
+  if (!res.ok) throw new Error((await res.json()).detail || res.statusText);
+  const data = await res.json();
+
+  viewport.innerHTML = '<img src="' + data.annotated_image_url + '" alt="annotated result" />';
+  setStatus('done', false);
+  expectedBadgeWrap.innerHTML = expectedBadge(data.expected_color);
+  frameCounter.textContent = data.num_people + ' people detected';
+
+  renderPeople(data.people);
+  const anomalies = data.people.filter(p => p.is_anomaly);
+  renderAlerts(anomalies.map(p => ({ track_id: p.track_id, color: p.color, confidence: p.confidence, frame: 0 })));
+}
+
+async function runVideo(file, expected) {
+  setStatus('uploading…', true);
+  viewport.innerHTML = '<div class="placeholder"><span class="big">◐</span>uploading video…</div>';
+
+  const form = new FormData();
+  form.append('file', file);
+  if (expected) form.append('expected_color', expected);
+
+  const uploadRes = await fetch('/upload/video', { method: 'POST', body: form });
+  if (!uploadRes.ok) throw new Error((await uploadRes.json()).detail || uploadRes.statusText);
+  const uploadData = await uploadRes.json();
+  const videoId = uploadData.video_id;
+
+  setStatus('streaming', true);
+  viewport.innerHTML = '<img src="/stream/video/' + videoId + '" alt="live feed" />';
+
+  pollTimer = setInterval(() => pollStatus(videoId), 700);
+}
+
+async function pollStatus(videoId) {
+  const res = await fetch('/stream/video/' + videoId + '/status');
+  if (!res.ok) return;
+  const data = await res.json();
+
+  frameCounter.textContent = 'frame ' + data.frame_index;
+  expectedBadgeWrap.innerHTML = expectedBadge(data.expected_color);
+  renderAlerts(data.alerts);
+
+  if (data.status === 'done' || data.status === 'error') {
+    clearInterval(pollTimer);
+    pollTimer = null;
+    setStatus(data.status === 'done' ? 'complete' : 'error', false);
+  }
+}
+
+function renderAlerts(alerts) {
+  if (!alerts || !alerts.length) {
+    alertLog.innerHTML = '<div class="empty-log">no anomalies logged yet</div>';
+    return;
+  }
+  const rows = alerts.slice().reverse().map(function(a) {
+    const swatchColor = SWATCH[a.color] || '#666';
+    const who = (a.track_id !== null && a.track_id !== undefined) ? ('ID ' + a.track_id) : 'person';
+    return '<div class="log-row">' +
+      '<span class="swatch" style="background:' + swatchColor + '"></span>' +
+      '<span>' + who + ' — ' + a.color + '</span>' +
+      '<span class="tag anomaly">frame ' + a.frame + '</span>' +
+      '</div>';
+  });
+  alertLog.innerHTML = rows.join('');
+}
+
+function renderPeople(people) {
+  if (!people || !people.length) {
+    peopleLog.innerHTML = '<div class="empty-log">no people detected</div>';
+    return;
+  }
+  const rows = people.map(function(p) {
+    const swatchColor = SWATCH[p.color] || '#666';
+    const pct = Math.round(p.confidence * 100);
+    const tagClass = p.is_anomaly ? 'anomaly' : 'ok';
+    const tagText = p.is_anomaly ? 'anomaly' : 'compliant';
+    return '<div class="log-row">' +
+      '<span class="swatch" style="background:' + swatchColor + '"></span>' +
+      '<span>' + p.color + ' · ' + pct + '%</span>' +
+      '<span class="tag ' + tagClass + '">' + tagText + '</span>' +
+      '</div>';
+  });
+  peopleLog.innerHTML = rows.join('');
+}
+</script>
+</body>
+</html>

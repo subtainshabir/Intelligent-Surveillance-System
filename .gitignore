@@ -16,3 +16,6 @@ outputs/
 # Datasets
 datasets/
 data/
+
+dress-code-anomaly/uploads/*
+!dress-code-anomaly/uploads/.gitkeep
