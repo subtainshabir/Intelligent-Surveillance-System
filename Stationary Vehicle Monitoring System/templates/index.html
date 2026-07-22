@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Surveillance System</title>
+<link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar__brand">
+    <span class="topbar__mark">◈</span>
+    <span class="topbar__title">AI Surveillance System</span>
+  </div>
+  <div class="topbar__status" id="system-status">
+    <span class="status-dot" id="status-dot"></span>
+    <span id="status-text">IDLE</span>
+  </div>
+</header>
+
+<main class="layout">
+
+  <section class="card upload-card">
+    <div class="upload-card__row">
+      <label class="file-picker">
+        <input type="file" id="video-input" accept=".mp4,.avi,.mov,.mkv,.webm" hidden />
+        <span class="file-picker__icon">⤒</span>
+        <span id="file-picker-label">Upload Video</span>
+      </label>
+
+      <button id="start-btn" class="btn btn--primary" disabled>
+        <span class="btn__icon">▶</span> Start Detection
+      </button>
+
+      <button id="reset-btn" class="btn btn--ghost">
+        <span class="btn__icon">↺</span> Reset
+      </button>
+    </div>
+    <p class="upload-card__hint" id="upload-hint">No video selected.</p>
+  </section>
+
+  <section class="panels">
+
+    <div class="card video-panel">
+      <div class="video-panel__frame">
+        <span class="hud-corner hud-corner--tl"></span>
+        <span class="hud-corner hud-corner--tr"></span>
+        <span class="hud-corner hud-corner--bl"></span>
+        <span class="hud-corner hud-corner--br"></span>
+
+        <img id="video-feed" alt="Live detection feed" />
+        <div class="video-panel__placeholder" id="video-placeholder">
+          <span class="placeholder__icon">▣</span>
+          <span>Upload a video and start detection to view the live feed</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card table-panel">
+      <h2 class="table-panel__title">Vehicle Monitoring</h2>
+      <div class="table-scroll">
+        <table class="vehicle-table">
+          <thead>
+            <tr>
+              <th>Vehicle ID</th>
+              <th>Status</th>
+              <th>Stationary Time</th>
+              <th>Current State</th>
+            </tr>
+          </thead>
+          <tbody id="vehicle-table-body">
+            <tr class="empty-row">
+              <td colspan="4">No vehicles tracked yet.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </section>
+
+</main>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>
