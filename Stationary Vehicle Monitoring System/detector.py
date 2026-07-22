@@ -1,10 +1,4 @@
-"""
-Thin wrapper around an Ultralytics YOLO model.
 
-Loads the model once and exposes a track() method that runs detection +
-built-in ByteTrack-based tracking, restricted to the vehicle classes this
-system cares about.
-"""
 
 from __future__ import annotations
 

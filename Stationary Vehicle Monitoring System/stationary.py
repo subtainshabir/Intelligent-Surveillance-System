@@ -1,27 +1,4 @@
-"""
-Stationary-vehicle bookkeeping.
 
-Two things had to be fixed here versus a naive first pass:
-
-1. Duration must be measured in *video time*, not wall-clock time. If the
-   host machine is slow and YOLO takes 300ms/frame instead of 30ms/frame,
-   wall-clock duration would run ~10x too fast relative to what's actually
-   happening on screen. The caller passes in a `video_time` (seconds of
-   footage elapsed, from the video's own timestamps) and everything here is
-   computed against that instead of time.time().
-
-2. Movement must be measured against a fixed *anchor* point, not the
-   previous frame. Comparing only to the previous frame lets a vehicle
-   creeping at, say, 10px/frame dodge a 15px threshold forever - each single
-   step is "not moving" even though it has drifted 150px over 15 frames.
-   Instead we keep an anchor position (where the vehicle was when it was
-   last confirmed to start sitting still) and reset it - and the timer -
-   as soon as cumulative drift from that anchor exceeds the threshold. A
-   light EMA smooths out per-frame detection jitter so a truly parked car
-   doesn't get bumped by noisy bounding boxes.
-
-This module has no OpenCV/YOLO dependency so it can be tested in isolation.
-"""
 
 from __future__ import annotations
 

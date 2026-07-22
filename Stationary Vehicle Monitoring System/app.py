@@ -1,15 +1,4 @@
-"""
-AI Surveillance System - FastAPI application entrypoint.
 
-Endpoints
----------
-GET  /                 Dashboard UI
-POST /upload            Upload a video file, saved into uploads/
-POST /start_detection   Kick off frame-by-frame processing on a background thread
-GET  /video_feed        MJPEG stream of the annotated video
-GET  /vehicle_status     JSON snapshot of tracked vehicles + status-bar stats
-POST /reset              Stop processing, clear state, delete the temp upload
-"""
 
 from __future__ import annotations
 

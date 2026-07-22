@@ -30,9 +30,6 @@ CONFIDENCE_THRESHOLD = 0.35
 # pixels from the spot where it last stopped (an anchor point, not just the
 # previous frame - see stationary.py for why that distinction matters).
 MOVEMENT_THRESHOLD = 15
-# The threshold above also scales with the vehicle's own size in pixels
-# (effective_threshold = max(MOVEMENT_THRESHOLD, ratio * bbox_diagonal)) so a
-# vehicle close to the camera and one far away are judged fairly.
 MOVEMENT_THRESHOLD_RATIO = 0.04
 # EMA smoothing applied to each vehicle's center before comparing to its
 # anchor, to absorb bounding-box jitter without masking real movement.
@@ -55,7 +52,6 @@ INFERENCE_IMG_SIZE = 480
 # Run detection+tracking every Nth frame instead of every frame; frames in
 # between reuse the last known boxes. Raise this (e.g. 2 or 3) on a slow
 # CPU-only laptop to keep the stream responsive. Stationary timing is still
-# correct either way since it's based on video time, not frames processed.
 DETECT_EVERY_N_FRAMES = 1
 
 # ---------------------------------------------------------------------------
