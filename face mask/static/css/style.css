@@ -1,0 +1,114 @@
+:root {
+  --primary: #0d6efd;
+  --primary-dark: #0b5ed7;
+  --bg: #f4f7fb;
+  --card-radius: 14px;
+}
+
+body {
+  background-color: var(--bg);
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+.navbar {
+  background: linear-gradient(90deg, var(--primary-dark), var(--primary));
+  box-shadow: 0 2px 10px rgba(13, 110, 253, 0.25);
+}
+
+/* Section selector cards */
+.option-card {
+  background: #fff;
+  border-radius: var(--card-radius);
+  padding: 1.75rem 1.25rem;
+  text-align: center;
+  cursor: pointer;
+  border: 2px solid transparent;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  height: 100%;
+}
+
+.option-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 22px rgba(13, 110, 253, 0.18);
+}
+
+.option-card.active {
+  border-color: var(--primary);
+  box-shadow: 0 10px 22px rgba(13, 110, 253, 0.2);
+}
+
+.option-card i {
+  font-size: 2rem;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.option-card h5 {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.option-card p {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin-bottom: 0;
+}
+
+/* Detection panels */
+.card {
+  border: none;
+  border-radius: var(--card-radius);
+  overflow: hidden;
+}
+
+.card-header {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+  border-bottom: none;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+/* Stats */
+.stat-box {
+  background: #eef4ff;
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #5b6b82;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.stat-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+}
+
+/* Media output */
+.result-media {
+  width: 100%;
+  max-height: 520px;
+  object-fit: contain;
+  background: #000;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
