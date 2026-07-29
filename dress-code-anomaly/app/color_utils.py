@@ -60,23 +60,7 @@ def extract_clothing_region(
     top_ratio: float = 0.20,
     bottom_ratio: float = 0.55,
 ) -> np.ndarray:
-    """
-    Crop the "clothing" band out of a person's bounding-box image.
 
-    top_ratio: skip this fraction from the top (head/neck).
-    bottom_ratio: stop at this fraction from the top.
-
-    Defaults to roughly the TORSO ONLY (shirt), not torso+legs. This
-    matters: if bottom_ratio is pushed down toward the legs (e.g. 0.90),
-    pants color (blue jeans, khakis, etc.) gets mixed into the same
-    K-Means vote as the shirt -- and if pants take up more pixels than
-    the shirt in the crop, they can outvote it entirely (a black-shirt
-    person can come back "blue" because of their jeans, not because of
-    any lighting/threshold issue). If your dress code cares about the
-    whole outfit rather than just the shirt, you can pass a larger
-    bottom_ratio back in -- but expect pants color to then compete with
-    shirt color for "dominant".
-    """
     h, w = person_bgr.shape[:2]
     if h == 0 or w == 0:
         return person_bgr
